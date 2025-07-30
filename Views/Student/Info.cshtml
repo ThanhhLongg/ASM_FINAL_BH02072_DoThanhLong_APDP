@@ -1,0 +1,13 @@
+@using Microsoft.AspNetCore.Http
+
+@{
+    ViewData["Title"] = "Student Info";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Your Information</h2>
+
+<p><strong>Username:</strong> @Context.Session.GetString("username")</p>
+<p><strong>Role:</strong> @Context.Session.GetString("role")</p>
+
+<a href="@Url.Action("Index", "Student")">Back to Dashboard</a>

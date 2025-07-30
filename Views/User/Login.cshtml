@@ -1,0 +1,14 @@
+@model User
+
+<form method="post" asp-controller="User" asp-action="Login">
+    <input type="text" name="Username" placeholder="Username" />
+    <input type="password" name="Password" placeholder="Password" />
+    <button type="submit">Login</button>
+</form>
+
+@if (ViewBag.Message != null)
+{
+    <div style="color:red;">@ViewBag.Message</div>
+}
+<a asp-controller="User" asp-action="Register">Register</a>
+

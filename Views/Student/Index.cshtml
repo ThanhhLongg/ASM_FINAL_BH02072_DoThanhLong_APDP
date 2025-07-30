@@ -1,0 +1,21 @@
+
+@using Microsoft.AspNetCore.Http
+
+@{
+    ViewData["Title"] = "Student Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Nếu bạn có layout dùng chung
+}
+
+<h2>Welcome, @Context.Session.GetString("username")!</h2>
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Student Dashboard</h4>
+        <p class="card-text">You are logged in as a <strong>Student</strong>.</p>
+
+        <ul>
+            <li><a href="@Url.Action("Info", "Student")">View Your Profile</a></li>
+            <li><a href="@Url.Action("Logout", "User")">Logout</a></li>
+        </ul>
+    </div>
+</div>
