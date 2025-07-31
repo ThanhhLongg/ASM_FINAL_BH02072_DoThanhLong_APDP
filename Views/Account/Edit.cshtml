@@ -1,15 +1,16 @@
-@model MvcAdoDemo.Models.Employee  
+@model MvcAdoDemo.Models.Account
     
 @{    
-    ViewData["Title"] = "Create";    
+    ViewData["Title"] = "Edit";    
 }    
-<h2>Create</h2>    
-<h4>Employees</h4>    
+<h2>Edit</h2>    
+<h4>Accounts</h4>    
 <hr />    
 <div class="row">    
     <div class="col-md-4">    
-        <form asp-action="Create">    
+        <form asp-action="Edit">    
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>    
+            <input type="hidden" asp-for="UserId" />    
             <div class="form-group">    
                 <label asp-for="Name" class="control-label"></label>    
                 <input asp-for="Name" class="form-control" />    
@@ -24,18 +25,18 @@
                 </select>    
                 <span asp-validation-for="Gender" class="text-danger"></span>    
             </div>    
-            <div class="form-group">    
+            @* <div class="form-group">    
                 <label asp-for="Department" class="control-label"></label>    
                 <input asp-for="Department" class="form-control" />    
                 <span asp-validation-for="Department" class="text-danger"></span>    
-            </div>    
+            </div>     *@
             <div class="form-group">    
                 <label asp-for="City" class="control-label"></label>    
                 <input asp-for="City" class="form-control" />    
                 <span asp-validation-for="City" class="text-danger"></span>    
-            </div>    
+            </div>                
             <div class="form-group">    
-                <input type="submit" value="Create" class="btn btn-default" />    
+                <input type="submit" value="Save" class="btn btn-default" />    
             </div>    
         </form>    
     </div>    

@@ -162,6 +162,7 @@ C:\Users\ASUS\MvcAdoDemo\obj\Debug\net8.0\MvcAdoDemo.csproj.CoreCompileInputs.ca
 C:\Users\ASUS\MvcAdoDemo\obj\Debug\net8.0\MvcAdoDemo.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\ASUS\MvcAdoDemo\obj\Debug\net8.0\MvcAdoDemo.RazorAssemblyInfo.cache
 C:\Users\ASUS\MvcAdoDemo\obj\Debug\net8.0\MvcAdoDemo.RazorAssemblyInfo.cs
+C:\Users\ASUS\MvcAdoDemo\obj\Debug\net8.0\MvcAdoDemo.sourcelink.json
 C:\Users\ASUS\MvcAdoDemo\obj\Debug\net8.0\staticwebassets.build.json
 C:\Users\ASUS\MvcAdoDemo\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\ASUS\MvcAdoDemo\obj\Debug\net8.0\staticwebassets\msbuild.MvcAdoDemo.Microsoft.AspNetCore.StaticWebAssets.props

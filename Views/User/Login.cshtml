@@ -1,14 +1,21 @@
-@model User
+@model MvcAdoDemo.Models.Account
 
-<form method="post" asp-controller="User" asp-action="Login">
-    <input type="text" name="Username" placeholder="Username" />
-    <input type="password" name="Password" placeholder="Password" />
+<h2>Login</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div style="color:red">@TempData["ErrorMessage"]</div>
+}
+
+<form asp-action="Login" method="post">
+    <label asp-for="Username"></label>
+    <input asp-for="Username" />
+    <br />
+
+    <label asp-for="Password"></label>
+    <input asp-for="Password" />
+    <br />
+
     <button type="submit">Login</button>
 </form>
-
-@if (ViewBag.Message != null)
-{
-    <div style="color:red;">@ViewBag.Message</div>
-}
-<a asp-controller="User" asp-action="Register">Register</a>
-
+<a href="/User/Register">Register</a>

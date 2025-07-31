@@ -1,0 +1,40 @@
+@model IEnumerable<MvcAdoDemo.Models.Account>
+
+@{
+    ViewBag.Title = "Account List";
+}
+
+<h2>Account List</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>@Html.DisplayNameFor(model => model.Username)</th>
+        <th>@Html.DisplayNameFor(model => model.Password)</th>
+        <th>@Html.DisplayNameFor(model => model.Role)</th>
+        <th>@Html.DisplayNameFor(model => model.StudentId)</th>
+        <th>@Html.DisplayNameFor(model => model.Name)</th>
+        <th>@Html.DisplayNameFor(model => model.Gender)</th>
+        <th>@Html.DisplayNameFor(model => model.City)</th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>@item.Username</td>
+        <td>@item.Password</td>
+        <td>@item.Role</td>
+        <td>@item.StudentId</td>
+        <td>@item.Name</td>
+        <td>@item.Gender</td>
+        <td>@item.City</td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id = item.UserId }) |
+            @Html.ActionLink("Details", "Details", new { id = item.UserId }) |
+            @Html.ActionLink("Delete", "Delete", new { id = item.UserId })
+        </td>
+    </tr>
+}
+</table>

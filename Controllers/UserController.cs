@@ -1,92 +1,134 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Data.SqlClient;
 using MvcAdoDemo.Models;
+using Microsoft.Data.SqlClient;
+using System.Data;
+using System;
 using Microsoft.Extensions.Configuration;
 
-
-public class UserController : Controller
+namespace MvcAdoDemo.Controllers
 {
-    private readonly string connectionString = "Server=localhost\\SQLEXPRESS01;Database=EmployeeDB2;Trusted_Connection=True;Encrypt=False;TrustServerCertificate=True;";
-
-    [HttpGet]
-    public IActionResult Register() => View();
-
-    [HttpPost]
-    public IActionResult Register(User user)
+    public class UserController : Controller
     {
-        using (SqlConnection connection = new SqlConnection(connectionString))
+        private readonly IConfiguration _configuration;
+
+        public UserController(IConfiguration configuration)
         {
-            connection.Open();
-
-            // Kiểm tra xem username đã tồn tại chưa
-            string checkQuery = "SELECT COUNT(*) FROM Users WHERE Username = @Username";
-            SqlCommand checkCmd = new SqlCommand(checkQuery, connection);
-            checkCmd.Parameters.AddWithValue("@Username", user.Username);
-
-            int userCount = (int)checkCmd.ExecuteScalar();
-
-            if (userCount > 0)
-            {
-                ViewBag.Error = "Username already exists.";
-                return View(); // trả về form đăng ký cùng lỗi
-            }
-
-            // Nếu chưa có thì thêm mới
-            string query = "INSERT INTO Users (Username, Password, Role) VALUES (@Username, @Password, @Role)";
-            SqlCommand cmd = new SqlCommand(query, connection);
-            cmd.Parameters.AddWithValue("@Username", user.Username);
-            cmd.Parameters.AddWithValue("@Password", user.Password); // Lưu ý: chưa mã hóa password!
-            cmd.Parameters.AddWithValue("@Role", user.Role);
-
-            cmd.ExecuteNonQuery();
+            _configuration = configuration;
         }
 
-        return RedirectToAction("Login");
-    }
-
-
-    [HttpGet]
-    public IActionResult Login() => View();
-
-    [HttpPost]
-    public IActionResult Login(User user)
-    {
-        if (ModelState.IsValid)
+        // GET: User/Register
+        [HttpGet]
+        public IActionResult Register()
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            return View();
+        }
+
+        // POST: User/Register
+        [HttpPost]
+        public IActionResult Register(Account user)
+        {
+            if (ModelState.IsValid)
             {
-                string sql = "SELECT * FROM Users WHERE LTRIM(RTRIM(Username)) = LTRIM(RTRIM(@Username)) AND LTRIM(RTRIM(Password)) = LTRIM(RTRIM(@Password))";
-                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (SqlConnection conn = new SqlConnection(connectionString))
                 {
-                    cmd.Parameters.AddWithValue("@Username", user.Username);
-                    cmd.Parameters.AddWithValue("@Password", user.Password);
                     conn.Open();
 
-                    var reader = cmd.ExecuteReader();
+                    // Kiểm tra xem Username đã tồn tại chưa
+                    string checkSql = "SELECT COUNT(*) FROM Account WHERE Username = @Username";
+                    SqlCommand checkCmd = new SqlCommand(checkSql, conn);
+                    checkCmd.Parameters.AddWithValue("@Username", user.Username);
+                    int userCount = (int)checkCmd.ExecuteScalar();
+
+                    if (userCount > 0)
+                    {
+                        ModelState.AddModelError("Username", "Username already exists.");
+                        return View(user);
+                    }
+
+                    // Nếu chưa tồn tại, tiến hành insert
+                    string sql = "INSERT INTO Account (Username, Password, Role, StudentId, Name, Gender, City) " +
+                                "VALUES (@Username, @Password, @Role, @StudentId, @Name, @Gender, @City)";
+                    SqlCommand cmd = new SqlCommand(sql, conn);
+                    cmd.Parameters.AddWithValue("@Username", user.Username);
+                    cmd.Parameters.AddWithValue("@Password", user.Password);
+                    cmd.Parameters.AddWithValue("@Role", user.Role ?? "student");
+                    cmd.Parameters.AddWithValue("@StudentId", user.StudentId ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Name", user.Name ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Gender", user.Gender ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@City", user.City ?? (object)DBNull.Value);
+
+                    cmd.ExecuteNonQuery();
+                }
+
+                TempData["SuccessMessage"] = "Registration successful!";
+                return RedirectToAction("Login");
+            }
+
+            return View(user);
+        }
+
+
+        // GET: User/Login
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        // POST: User/Login
+        [HttpPost]
+        public IActionResult Login(Account user)
+        {
+            if (ModelState.IsValid)
+            {
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string sql = "SELECT * FROM Account WHERE Username = @Username AND Password = @Password";
+                    SqlCommand cmd = new SqlCommand(sql, conn);
+                    cmd.Parameters.AddWithValue("@Username", user.Username);
+                    cmd.Parameters.AddWithValue("@Password", user.Password);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
                     if (reader.Read())
                     {
-                        string role = reader["Role"].ToString();
-                        HttpContext.Session.SetString("username", user.Username);
-                        HttpContext.Session.SetString("role", role);
+                        HttpContext.Session.SetString("username", reader["Username"].ToString());
+                        HttpContext.Session.SetString("role", reader["Role"].ToString());
 
-                        if (role == "teacher")
-                            return RedirectToAction("Index", "Employee"); // Danh sách sinh viên
+                        string role = reader["Role"].ToString().ToLower();
+                        if (role == "admin")
+                        {
+                            return RedirectToAction("Index", "Account");
+                        }
+                        else if (role == "student")
+                        {
+                            return RedirectToAction("Index", "Student");
+                        }
                         else
-                            return RedirectToAction("Index", "Student"); // Xem thông tin của sinh viên
+                        {
+                            TempData["ErrorMessage"] = "Unknown role.";
+                            return View(user);
+                        }
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Invalid username or password.";
+                        return View(user);
                     }
                 }
             }
 
-            ViewBag.Message = "Invalid login.";
+            return View(user);
         }
 
-        return View(user);
-    }
-
-    public IActionResult Logout()
-    {
-        HttpContext.Session.Clear();
-        return RedirectToAction("Login");
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login");
+        }
     }
 }

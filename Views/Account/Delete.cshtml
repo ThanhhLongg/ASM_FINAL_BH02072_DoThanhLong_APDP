@@ -1,12 +1,13 @@
-@model MvcAdoDemo.Models.Employee  
-    
+@model MvcAdoDemo.Models.Account
+
 @{    
     ViewData["Title"] = "Delete";    
 }    
+
 <h2>Delete</h2>    
 <h3>Are you sure you want to delete this?</h3>    
 <div>    
-    <h4>Employees</h4>    
+    <h4>Account</h4>    
     <hr />    
     <dl class="dl-horizontal">    
         <dt>    
@@ -22,21 +23,15 @@
             @Html.DisplayFor(model => model.Gender)    
         </dd>    
         <dt>    
-            @Html.DisplayNameFor(model => model.Department)    
-        </dt>    
-        <dd>    
-            @Html.DisplayFor(model => model.Department)    
-        </dd>    
-        <dt>    
             @Html.DisplayNameFor(model => model.City)    
         </dt>    
         <dd>    
             @Html.DisplayFor(model => model.City)    
         </dd>    
     </dl>    
-    
+
     <form asp-action="Delete">    
-        <input type="hidden" asp-for="ID" />    
+        <input type="hidden" asp-for="StudentId" />    
         <input type="submit" value="Delete" class="btn btn-default" /> |    
         <a asp-action="Index">Back to List</a>    
     </form>    

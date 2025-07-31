@@ -1,50 +1,117 @@
-// using Microsoft.AspNetCore.Mvc;
-// using MvcAdoDemo.Models;
-// using System.Linq;
-// using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using MvcAdoDemo.Models;
+using MvcAdoDemo.Data;
 
-// namespace MvcAdoDemo.Controllers
-// {
-//     public class AccountController : Controller
-//     {
-//         private readonly AppDbContext _context;
+namespace MvcAdoDemo.Controllers
+{
+    public class AccountController : Controller
+    {
+        AccountDataAccessLayer objemployee = new AccountDataAccessLayer();
 
-//         public AccountController(AppDbContext context)
-//         {
-//             _context = context;
-//         }
+        public IActionResult Index()
+        {
+            if (HttpContext.Session.GetString("role") != "admin")
+                return RedirectToAction("Index", "Account");
 
-//         [HttpGet]
-//         public IActionResult Login()
-//         {
-//             return View();
-//         }
+            List<Account> lstEmployee = objemployee.GetAllAccounts().ToList();
+            return View(lstEmployee);
+        }
 
-//         [HttpPost]
-//         public IActionResult Login(string username, string password)
-//         {
-//             var user = _context.Users
-//                 .FirstOrDefault(u => u.Username == username && u.Password == password);
+        public IActionResult Info()
+        {
+            string username = HttpContext.Session.GetString("username");
+            // TODO: Lấy thông tin người dùng theo username nếu cần
+            return View();
+        }
 
-//             if (user != null)
-//             {
-//                 HttpContext.Session.SetString("Username", user.Username);
-//                 HttpContext.Session.SetString("Role", user.Role);
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
 
-//                 if (user.Role == "admin")
-//                     return RedirectToAction("Index", "Admin");
-//                 else
-//                     return RedirectToAction("Index", "Home");
-//             }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create([Bind] Account account)
+        {
+            if (ModelState.IsValid)
+            {
+                objemployee.AddAccount(account);
+                return RedirectToAction("Index");
+            }
+            return View(account);
+        }
+        [HttpPost]
+        public IActionResult Edit(Account account)
+        {
+            if (ModelState.IsValid)
+            {
+                objemployee.UpdateAccount(account); // hoặc tên khác bạn dùng để update
+                return RedirectToAction("Index");
+            }
 
-//             ViewBag.Error = "Sai tên đăng nhập hoặc mật khẩu.";
-//             return View();
-//         }
+            return View(account);
+        }
 
-//         public IActionResult Logout()
-//         {
-//             HttpContext.Session.Clear();
-//             return RedirectToAction("Login");
-//         }
-//     }
-// }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, [Bind] Account account)
+        {
+            if (id != account.UserId)
+            {
+                return NotFound();
+            }
+            if (ModelState.IsValid)
+            {
+                objemployee.UpdateAccount(account);
+                return RedirectToAction("Index");
+            }
+            return View(account);
+        }
+
+        [HttpGet]
+        public IActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            Account account = objemployee.GetAccountData(id);
+
+            if (account == null)
+            {
+                return NotFound();
+            }
+            return View(account);
+        }
+
+        [HttpGet]
+        public IActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            Account account = objemployee.GetAccountData(id);
+
+            if (account == null)
+            {
+                return NotFound();
+            }
+            return View(account);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int? id)
+        {
+            objemployee.DeleteAccount(id);
+            return RedirectToAction("Index");
+        }
+    }
+}

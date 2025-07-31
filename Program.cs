@@ -18,9 +18,6 @@ builder.Services.AddSession(); // Thêm dòng này
 // Thêm MVC
 builder.Services.AddControllersWithViews();
 
-// ✅ Bật session ở đây
-builder.Services.AddSession();
-
 var app = builder.Build();
 app.UseSession(); // bật session
 
@@ -33,6 +30,7 @@ app.UseSession();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Employee}/{action=Index}/{id?}");
+    pattern: "{controller=User}/{action=Login}/{id?}");
+
 
 app.Run();
