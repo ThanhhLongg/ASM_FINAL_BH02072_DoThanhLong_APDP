@@ -53,15 +53,28 @@ namespace MvcAdoDemo.Data
                 cmd.Parameters.AddWithValue("@Username", account.Username);
                 cmd.Parameters.AddWithValue("@Password", account.Password);
                 cmd.Parameters.AddWithValue("@Role", account.Role);
-                cmd.Parameters.AddWithValue("@StudentId", account.StudentId);
-                cmd.Parameters.AddWithValue("@Name", account.Name);
-                cmd.Parameters.AddWithValue("@Gender", account.Gender);
-                cmd.Parameters.AddWithValue("@City", account.City);
+
+                // Nếu Role là student thì truyền đầy đủ, ngược lại truyền DBNull
+                if (account.Role.ToLower() == "student")
+                {
+                    cmd.Parameters.AddWithValue("@StudentId", account.StudentId);
+                    cmd.Parameters.AddWithValue("@Name", account.Name);
+                    cmd.Parameters.AddWithValue("@Gender", account.Gender);
+                    cmd.Parameters.AddWithValue("@City", account.City);
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@StudentId", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Name", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Gender", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@City", DBNull.Value);
+                }
 
                 con.Open();
                 cmd.ExecuteNonQuery();
             }
         }
+
 
         // Cập nhật tài khoản
         public void UpdateAccount(Account account)

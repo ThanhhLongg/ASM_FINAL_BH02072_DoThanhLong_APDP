@@ -45,34 +45,32 @@ namespace MvcAdoDemo.Controllers
             }
             return View(account);
         }
+        [HttpGet]
+        public IActionResult Edit(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            Account account = objemployee.GetAccountData(id);
+
+            if (account == null)
+                return NotFound();
+
+            return View(account);
+        }
+
+
         [HttpPost]
         public IActionResult Edit(Account account)
         {
             if (ModelState.IsValid)
             {
-                objemployee.UpdateAccount(account); // hoặc tên khác bạn dùng để update
-                return RedirectToAction("Index");
-            }
-
-            return View(account);
-        }
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, [Bind] Account account)
-        {
-            if (id != account.UserId)
-            {
-                return NotFound();
-            }
-            if (ModelState.IsValid)
-            {
-                objemployee.UpdateAccount(account);
+                objemployee.UpdateAccount(account); // phương thức update trong DAL
                 return RedirectToAction("Index");
             }
             return View(account);
         }
+
 
         [HttpGet]
         public IActionResult Details(int? id)
